@@ -12,8 +12,12 @@ app = FastAPI()
 # ✅ Load the trained model from Google Drive
 # ✅ Change this line:
 model_path = "ara0014/TextSummarizer-T5"  # Your Hugging Face model repo
-tokenizer = T5Tokenizer.from_pretrained(model_path, use_auth_token=True)
-model = T5ForConditionalGeneration.from_pretrained(model_path, use_auth_token=True)
+import os
+
+hf_token = os.getenv("HUGGINGFACE_TOKEN")  # Get token from Render env
+tokenizer = T5Tokenizer.from_pretrained(model_path, use_auth_token=hf_token)
+model = T5ForConditionalGeneration.from_pretrained(model_path, use_auth_token=hf_token)
+
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
