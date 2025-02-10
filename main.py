@@ -3,20 +3,19 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import T5Tokenizer, T5ForConditionalGeneration
 import torch
-
+import os
 
 
 # ✅ Initialize FastAPI
 app = FastAPI()
 
-# ✅ Load the trained model from Google Drive
-# ✅ Change this line:
-model_path = "ara0014/TextSummarizer-T5"  # Your Hugging Face model repo
-import os
 
-hf_token = os.getenv("HUGGINGFACE_TOKEN")  # Get token from Render env
-tokenizer = T5Tokenizer.from_pretrained(model_path, use_auth_token=hf_token)
-model = T5ForConditionalGeneration.from_pretrained(model_path, use_auth_token=hf_token)
+
+model_path = "ara0014/TextSummarizer-T5"
+hf_token = os.getenv("HUGGINGFACE_TOKEN")  # Get the token from Render environment
+
+tokenizer = T5Tokenizer.from_pretrained(model_path, token=hf_token)
+model = T5ForConditionalGeneration.from_pretrained(model_path, token=hf_token)
 
 
 
