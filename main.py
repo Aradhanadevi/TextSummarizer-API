@@ -14,9 +14,8 @@ app = FastAPI()
 model_path = "ara0014/TextSummarizer-T5"
 hf_token = os.getenv("HUGGINGFACE_TOKEN")  # Get the token from Render environment
 
-tokenizer = T5Tokenizer.from_pretrained(model_path, token=hf_token)
-model = T5ForConditionalGeneration.from_pretrained(model_path, token=hf_token)
-
+tokenizer = T5Tokenizer.from_pretrained(model_path, token=hf_token, revision="master")
+model = T5ForConditionalGeneration.from_pretrained(model_path, token=hf_token, revision="master")
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
