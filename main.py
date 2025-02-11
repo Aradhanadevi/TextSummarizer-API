@@ -9,15 +9,15 @@ from huggingface_hub import snapshot_download
 # ✅ Initialize FastAPI
 app = FastAPI()
 
-# ✅ Set model directory
+# ✅ Define the model directory
 MODEL_DIR = "fine_tuned_t5"
 
-# ✅ Download the model from Hugging Face if not already present
+# ✅ Download the model from Hugging Face if not available
 if not os.path.exists(MODEL_DIR):
     print("Downloading model from Hugging Face...")
-    snapshot_download(repo_id="ara0014/TextSummarizer-T5", repo_type="model", local_dir=MODEL_DIR, revision="master")
+    snapshot_download(repo_id="ara0014/TextSummarizer-T5", local_dir=MODEL_DIR, revision="master")
 
-# ✅ Load model from local directory
+# ✅ Load the model from the local directory
 tokenizer = T5Tokenizer.from_pretrained(MODEL_DIR)
 model = T5ForConditionalGeneration.from_pretrained(MODEL_DIR)
 
