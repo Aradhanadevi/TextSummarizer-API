@@ -4,19 +4,22 @@ from pydantic import BaseModel
 from transformers import T5Tokenizer, T5ForConditionalGeneration
 import torch
 import os
-
+from huggingface_hub import snapshot_download
 
 # ✅ Initialize FastAPI
 app = FastAPI()
 
+# ✅ Set model directory
+MODEL_DIR = "fine_tuned_t5"
 
+# ✅ Download the model from Hugging Face if not already present
+if not os.path.exists(MODEL_DIR):
+    print("Downloading model from Hugging Face...")
+    snapshot_download(repo_id="ara0014/TextSummarizer-T5", repo_type="model", local_dir=MODEL_DIR, revision="master")
 
-model_path = "ara0014/TextSummarizer-T5"
-hf_token = os.getenv("HUGGINGFACE_TOKEN")  # Get the token from Render environment
-
-tokenizer = T5Tokenizer.from_pretrained(model_path, token=hf_token, revision="master")
-model = T5ForConditionalGeneration.from_pretrained(model_path, token=hf_token, revision="master")
-
+# ✅ Load model from local directory
+tokenizer = T5Tokenizer.from_pretrained(MODEL_DIR)
+model = T5ForConditionalGeneration.from_pretrained(MODEL_DIR)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
