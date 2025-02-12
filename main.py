@@ -10,29 +10,27 @@ from huggingface_hub import snapshot_download
 app = FastAPI()
 
 # ✅ Define the model directory
-MODEL_DIR = os.path.abspath("fine_tuned_t5")  # Ensure absolute path
-hf_token = os.getenv("HUGGINGFACE_TOKEN")  # Get token from Render env
+MODEL_DIR = "/opt/render/project/src/fine_tuned_t5"
 
-# ✅ Download the model from Hugging Face if not available
-if not os.path.exists(MODEL_DIR):
+# ✅ Get Hugging Face token from Render environment variables
+hf_token = os.getenv("HUGGINGFACE_TOKEN")
+
+# ✅ Download model if not available
+if not os.path.exists(MODEL_DIR) or len(os.listdir(MODEL_DIR)) == 0:
     print("📥 Downloading model from Hugging Face...")
     snapshot_download(
         repo_id="ara0014/TextSummarizer-T5",
         local_dir=MODEL_DIR,
         revision="main",
-        use_auth_token=hf_token
+        token=hf_token,  # Use the secured token
     )
 
-# ✅ Debug: Check if model files exist
-print(f"📂 Checking files in {MODEL_DIR}...")
-print(os.listdir(MODEL_DIR))  # Show downloaded files
-
-# ✅ Load the model from the correct directory
+# ✅ Load the model from the downloaded directory
 print("🔄 Loading model...")
 tokenizer = T5Tokenizer.from_pretrained(MODEL_DIR)
 model = T5ForConditionalGeneration.from_pretrained(MODEL_DIR)
 
-# ✅ Move model to GPU if available
+# ✅ Move model to device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
@@ -51,9 +49,7 @@ def summarize_text(request: SummaryRequest):
 
     return {"summary": summary}
 
-# ✅ Run the FastAPI server with the correct port
+# ✅ Run the FastAPI server
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.environ.get("PORT", 10000))  # Render uses PORT environment variable
-    print(f"🚀 Running FastAPI on port {port}...")
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 10000)))
