@@ -1,4 +1,4 @@
-# Install necessary libraries
+# ✅ Install necessary libraries
 from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import T5Tokenizer, T5ForConditionalGeneration
@@ -14,10 +14,11 @@ MODEL_DIR = "fine_tuned_t5"
 
 # ✅ Download the model from Hugging Face if not available
 if not os.path.exists(MODEL_DIR):
-    print("Downloading model from Hugging Face...")
-    snapshot_download(repo_id="ara0014/TextSummarizer-T5", local_dir=MODEL_DIR, revision="master")
+    print("📥 Downloading model from Hugging Face...")
+    snapshot_download(repo_id="ara0014/TextSummarizer-T5", local_dir=MODEL_DIR, revision="main")
 
 # ✅ Load the model from the local directory
+print("🔄 Loading model...")
 tokenizer = T5Tokenizer.from_pretrained(MODEL_DIR)
 model = T5ForConditionalGeneration.from_pretrained(MODEL_DIR)
 
@@ -39,7 +40,9 @@ def summarize_text(request: SummaryRequest):
 
     return {"summary": summary}
 
-# ✅ Run the FastAPI server
+# ✅ Run the FastAPI server with the correct port
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 10000))  # Render uses PORT environment variable
+    print(f"🚀 Running FastAPI on port {port}...")
+    uvicorn.run(app, host="0.0.0.0", port=port)
