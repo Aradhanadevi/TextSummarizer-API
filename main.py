@@ -12,10 +12,18 @@ app = FastAPI()
 # ✅ Define the model directory
 MODEL_DIR = "fine_tuned_t5"
 
+# ✅ Get Hugging Face token from Render environment variables
+hf_token = os.getenv("HUGGINGFACE_TOKEN")
+
 # ✅ Download the model from Hugging Face if not available
 if not os.path.exists(MODEL_DIR):
     print("📥 Downloading model from Hugging Face...")
-    snapshot_download(repo_id="ara0014/TextSummarizer-T5", local_dir=MODEL_DIR, revision="main")
+    snapshot_download(
+        repo_id="ara0014/TextSummarizer-T5",
+        local_dir=MODEL_DIR,
+        revision="main",
+        use_auth_token=hf_token  # 🔹 Authenticate with token
+    )
 
 # ✅ Load the model from the local directory
 print("🔄 Loading model...")
