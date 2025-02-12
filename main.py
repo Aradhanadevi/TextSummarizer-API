@@ -10,10 +10,8 @@ from huggingface_hub import snapshot_download
 app = FastAPI()
 
 # ✅ Define the model directory
-MODEL_DIR = "fine_tuned_t5"
-
-# ✅ Get Hugging Face token from Render environment variables
-hf_token = os.getenv("HUGGINGFACE_TOKEN")
+MODEL_DIR = os.path.abspath("fine_tuned_t5")  # Ensure absolute path
+hf_token = os.getenv("HUGGINGFACE_TOKEN")  # Get token from Render env
 
 # ✅ Download the model from Hugging Face if not available
 if not os.path.exists(MODEL_DIR):
@@ -22,14 +20,19 @@ if not os.path.exists(MODEL_DIR):
         repo_id="ara0014/TextSummarizer-T5",
         local_dir=MODEL_DIR,
         revision="main",
-        use_auth_token=hf_token  # 🔹 Authenticate with token
+        use_auth_token=hf_token
     )
 
-# ✅ Load the model from the local directory
+# ✅ Debug: Check if model files exist
+print(f"📂 Checking files in {MODEL_DIR}...")
+print(os.listdir(MODEL_DIR))  # Show downloaded files
+
+# ✅ Load the model from the correct directory
 print("🔄 Loading model...")
 tokenizer = T5Tokenizer.from_pretrained(MODEL_DIR)
 model = T5ForConditionalGeneration.from_pretrained(MODEL_DIR)
 
+# ✅ Move model to GPU if available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
